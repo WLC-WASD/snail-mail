@@ -56,25 +56,35 @@ void setup() {
   groupWrite(HIGH);
 }
 
-void loop() {
+//void loop() {
+//  log("Loop Begin");
+//  while(!getRate()); // Don't continue if rate is at lowest position!
+//
+//  // State Tracker
+//  static int state = 0;
+//
+//  // Turn On Pins 1 at a time
+//  int curPin = state % PIN_C;
+//  
+//  b_write(PINS[curPin], LOW);
+//
+//  // Nice Delay :)
+//  delay(getRate());
+//  while(!getRate()); // Don't continue if rate is at lowest position!
+//
+//  // Turn Off Pin
+//  b_write(PINS[curPin], HIGH);
+//
+//  // Update State
+//  state++;
+//}
+
+void loop(){
+  //b_write(PINS[0],HIGH);
+  static int count = 0;
   log("Loop Begin");
-  while(!getRate()); // Don't continue if rate is at lowest position!
-
-  // State Tracker
-  static int state = 0;
-
-  // Turn On Pins 1 at a time
-  int curPin = state % PIN_C;
   
-  b_write(PINS[curPin], LOW);
-
-  // Nice Delay :)
+  h_write(count++);
   delay(getRate());
-  while(!getRate()); // Don't continue if rate is at lowest position!
-
-  // Turn Off Pin
-  b_write(PINS[curPin], HIGH);
-
-  // Update State
-  state++;
+  if (count == 16) count = 0;
 }
