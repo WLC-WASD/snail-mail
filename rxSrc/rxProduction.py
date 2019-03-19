@@ -5,7 +5,7 @@ import os
 
 ###################### PIN SETUP #################
 # Pins used for recieving data
-DATA_PINS = [6, 13, 19, 26]
+DATA_PINS = [26, 19, 13, 6]#6, 13, 19, 26]
 
 GPIO.setmode(GPIO.BCM)
 
@@ -15,6 +15,8 @@ for pin in DATA_PINS:
 
 ###################### /PIN SETUP ###############
 
+
+###################### EVENT FUNCTIONS ##########
 def DoorOpen():
     print("DoorOpen")
 
@@ -32,14 +34,16 @@ codeActions = {
         0x00: DoorClose,
         0x08: BatteryLow,
         0x0c: BatteryNotLow
-        }
+}
+
+###################### /EVENT FUNCTIONS #########
 
 # Function to print current data
 def ReadData():
     statusCode = ""
     for pin in DATA_PINS:
         statusCode += str(GPIO.input(pin))
-    print("Status Code: " + statusCode)
+    #print("Status Code: " + statusCode)
     return statusCode
 
 PreviousDoorMask = -1
@@ -68,7 +72,11 @@ def Translate(code):
         ReturnFunctions.append(codeActions[MaskedDoor])
 
     if PreviousBatteryMask != MaskedBattery:
-        ReturnFunctions.append(codeActions[MaskedBattery])
+        try:
+            ReturnFunctions.append(codeActions[MaskedBattery])
+        except:
+            print("Invalid Code: " + code)
+            return ReturnFunctions
 
     PreviousBatteryMask = MaskedBattery
     PreviousDoorMask = MaskedDoor
@@ -91,8 +99,8 @@ def PollPins():
 for pin in DATA_PINS:
     GPIO.add_event_detect(pin, GPIO.RISING)
 
-try:
-    while True: PollPins()
-except Exception as e:
-    print(str(e))
-    GPIO.cleanup()
+#try:
+while True: PollPins()
+#except Exception as e:
+#    print("Exception: " + str(e))
+#    GPIO.cleanup()
