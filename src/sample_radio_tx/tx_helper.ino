@@ -17,7 +17,7 @@ void h_write(int hex)
 // Writes binary data to provided pin
 void b_write(int pin, bool data)
 {
-  log("Binary Write (PIN " + String(pin) + ")");
+  //log("Binary Write (PIN " + String(pin) + ")");
   digitalWrite(pin, data);
 }
 

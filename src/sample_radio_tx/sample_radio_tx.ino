@@ -1,3 +1,4 @@
+#include "Sll.cpp"
 
 /* DATA TX PINS */
 #define DATA_1 2
@@ -43,7 +44,7 @@ int getRate()
 void setup() {
 
   /* Enable Serial Communication */
-  Serial.begin(9600);
+  Serial.begin(115200);
   log("Setup Begin");
 
   /* Set up TX Pins */
@@ -56,35 +57,53 @@ void setup() {
   groupWrite(HIGH);
 }
 
-//void loop() {
-//  log("Loop Begin");
-//  while(!getRate()); // Don't continue if rate is at lowest position!
-//
-//  // State Tracker
-//  static int state = 0;
-//
-//  // Turn On Pins 1 at a time
-//  int curPin = state % PIN_C;
-//  
-//  b_write(PINS[curPin], LOW);
-//
-//  // Nice Delay :)
-//  delay(getRate());
-//  while(!getRate()); // Don't continue if rate is at lowest position!
-//
-//  // Turn Off Pin
-//  b_write(PINS[curPin], HIGH);
-//
-//  // Update State
-//  state++;
-//}
+enum EVENT {
+  DOOR_OPEN_EVENT,
+  DOOR_CLOSED_EVENT,
+  //TODO battery events
+};
+
 
 void loop(){
-  //b_write(PINS[0],HIGH);
-  static int count = 0;
-  log("Loop Begin");
-  
-  h_write(count++);
-  delay(getRate());
-  if (count == 16) count = 0;
+
+  static Sll <EVENT> event_queue;
+  EVENT a = DOOR_OPEN_EVENT;
+  EVENT b = DOOR_CLOSED_EVENT;
+  event_queue.insert(a);
+  event_queue.insert(b);
+
+  /*get current event*/
+  unsigned short data = 0xC; //TODO: change from 8
+  EVENT e;
+  while(event_queue.remove(e)){
+    switch(e){
+      case DOOR_OPEN_EVENT:
+        data |= 1 << 1; //set second bit 
+        log("door opened");
+      break;
+      case DOOR_CLOSED_EVENT:
+        data &= ~(1 << 1); //clear second bit
+        log("door closed");
+      break;
+    }
+    /*count parity*/
+    int bitTotal = 0;
+    for (int i = 3; i > 0; i--) {
+        if(data & (1 << i)) bitTotal++;
+    }
+    
+    log("total: " + (String)bitTotal);
+    
+    if (bitTotal % 2 == 0) {
+      data |= 1 << 0;
+    }
+    else {
+      data &= ~(1 << 0);
+    }
+    
+    /*send data*/
+    h_write(data);
+    delay(1000);
+  }
+
 }
