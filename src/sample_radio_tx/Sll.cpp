@@ -4,9 +4,7 @@
 
 /*Description:
 A templated singely linked list class.
-Implemented as a a ascending priority queue.
-Insert method inserts element of type T in sorted order.
-Remove method removes the "Smallest" element.*/
+Impleted as a FIFO queue*/
 
 /* Note: Use 'nullptr' not 'NULL' */
 
@@ -32,9 +30,15 @@ public:
   ~Sll();
   void insert(T);
   bool remove(T&);
+  T peek();
 private:
   Node<T>* head;
 };
+
+template <class T>
+T Sll<T>::peek(){
+  return head->element;
+}
 
 template <class T>
 Sll<T>::Sll(){
@@ -53,10 +57,9 @@ void Sll<T>::insert(T element){
   Node<T> *p, *q;
   p = head;
   q = nullptr;
-  while (p && p->element < element){
-    q = p;
-    p = q->next;
-  }
+  q = p;
+  if(q != nullptr) p = q->next;
+ 
   if(q == nullptr){ //if empty
     n->next = p;
     head = n;
