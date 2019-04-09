@@ -62,10 +62,10 @@ def Translate(code):
     MaskedBattery = intcode & BatteryMask
    
     # NOTE: The result of the door and battery maskings should NOT be 
-    # equal to eachother, thus equality signifies an invalid code.
+    # equal to each other, thus equality signifies an invalid code.
     # We'll assume that an invalid code should result in no actions.
     if MaskedDoor == MaskedBattery:
-        print("Invalid Code: " + code)
+#        print("Invalid Code: " + code)
         return ReturnFunctions
 
     if PreviousDoorMask != MaskedDoor:
